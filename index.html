@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Down to You ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd194 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 40px rgba(240, 147, 251, 0.3);
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: #b8c5d6;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .timer-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd194;
+        }
+
+        .timer-label {
+            font-size: 0.85rem;
+            color: #b8c5d6;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #f5576c;
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .day-card {
+            perspective: 1000px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .day-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .day-card.flipped .day-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .day-card.locked {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .day-card.locked .day-front {
+            background: rgba(50, 50, 70, 0.8);
+        }
+
+        .day-front, .day-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .day-front {
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.3) 0%, rgba(245, 87, 108, 0.3) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .day-front:hover {
+            border-color: rgba(255, 209, 148, 0.6);
+            box-shadow: 0 0 30px rgba(240, 147, 251, 0.3);
+        }
+
+        .day-card:not(.locked):active .day-front {
+            transform: scale(0.95);
+        }
+
+        .day-front {
+            transition: transform 0.15s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .day-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ffd194;
+            line-height: 1;
+        }
+
+        .day-date {
+            font-size: 0.8rem;
+            color: #b8c5d6;
+            margin-top: 5px;
+        }
+
+        .day-hint {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .day-back {
+            background: linear-gradient(135deg, #2d1f3d 0%, #1a1a2e 100%);
+            border: 2px solid rgba(255, 209, 148, 0.4);
+            transform: rotateY(180deg);
+            overflow: hidden;
+        }
+
+        .day-back-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .day-back img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .day-back-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 15px 10px 10px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .day-back-text {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #fff;
+        }
+
+        .day-back-quote {
+            font-style: italic;
+            color: #ffd194;
+        }
+
+        .day-back-no-image {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .day-back-no-image .emoji {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .day-back-no-image .quote {
+            font-style: italic;
+            font-size: 0.8rem;
+            color: #ffd194;
+            line-height: 1.5;
+        }
+
+        .day-back-no-image .context {
+            font-size: 0.7rem;
+            color: #b8c5d6;
+            margin-top: 8px;
+        }
+
+        .day-back-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            color: #f5576c;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Modal for expanded view */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+            background: rgba(0, 0, 0, 0.85);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2d1f3d 0%, #1a1a2e 100%);
+            border-radius: 24px;
+            max-width: 380px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 2px solid rgba(255, 209, 148, 0.5);
+            box-shadow: 0 25px 80px rgba(240, 147, 251, 0.3);
+            transform: scale(0.8) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-image {
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .modal-body {
+            padding: 24px;
+            text-align: center;
+        }
+
+        .modal-emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            animation: bounce-in 0.5s ease 0.2s both;
+        }
+
+        @keyframes bounce-in {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .modal-day {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: #f5576c;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .modal-quote {
+            font-style: italic;
+            font-size: 1.2rem;
+            color: #ffd194;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            animation: fade-in 0.5s ease 0.3s both;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-context {
+            color: #b8c5d6;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            animation: fade-in 0.5s ease 0.4s both;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b8c5d6;
+            font-style: italic;
+        }
+
+        footer .love-note {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #ffd194;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 0.95rem;
+                padding: 0 10px;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .day-card {
+                height: 120px;
+            }
+
+            .day-number {
+                font-size: 2rem;
+            }
+
+            .day-date {
+                font-size: 0.7rem;
+            }
+
+            .day-hint {
+                font-size: 0.65rem;
+            }
+
+            .timer-box {
+                padding: 12px 16px;
+                min-width: 70px;
+            }
+
+            .timer-number {
+                font-size: 1.8rem;
+            }
+
+            .timer-label {
+                font-size: 0.7rem;
+            }
+
+            .modal-content {
+                max-width: 90%;
+                margin: 0 auto;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-emoji {
+                font-size: 2.5rem;
+            }
+
+            .modal-quote {
+                font-size: 1.1rem;
+            }
+
+            .modal-context {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Confetti animation for opened days */
+        @keyframes float-up {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .heart-burst {
+            position: absolute;
+            pointer-events: none;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+
+        .heart-burst span {
+            position: absolute;
+            animation: sparkle-out 1s ease-out forwards;
+            font-size: 1.5rem;
+            opacity: 0;
+        }
+
+        @keyframes sparkle-out {
+            0% { opacity: 1; transform: scale(0.5) translate(0, 0); }
+            100% { opacity: 0; transform: scale(1) translate(var(--tx), var(--ty)); }
+        }
+
+        /* Toast notification for locked days */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.95) 0%, rgba(245, 87, 108, 0.95) 100%);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-style: italic;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-emoji {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Counting Down to Santa Teresa</h1>
+            <p class="subtitle">"The most beautiful things in life happen at the last and least likely minute"</p>
+            
+            <div class="countdown-timer">
+                <div class="timer-box">
+                    <div class="timer-number" id="days">--</div>
+                    <div class="timer-label">Days</div>
+                </div>
+                <div class="timer-box">
+                    <div class="timer-number" id="hours">--</div>
+                    <div class="timer-label">Hours</div>
+                </div>
+                <div class="timer-box">
+                    <div class="timer-number" id="minutes">--</div>
+                    <div class="timer-label">Minutes</div>
+                </div>
+                <div class="timer-box">
+                    <div class="timer-number" id="seconds">--</div>
+                    <div class="timer-label">Seconds</div>
+                </div>
+            </div>
+            
+            <div class="location">
+                <span>📍</span>
+                <span>March 1st, 2026 • Santa Teresa, Costa Rica</span>
+            </div>
+        </header>
+
+        <div class="calendar-grid" id="calendar"></div>
+
+        <footer>
+            <p class="love-note">"You are my soulmate. I've never felt that before about anyone. NEVER."</p>
+            <p>Te amo, mi pedazo de linda 🦥❤️</p>
+        </footer>
+    </div>
+
+    <!-- Toast for locked days -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Modal for expanded view -->
+    <div class="modal" id="modal">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-content">
+            <img class="modal-image" id="modal-image" src="" alt="">
+            <div class="modal-body">
+                <div class="modal-emoji" id="modal-emoji"></div>
+                <div class="modal-day" id="modal-day"></div>
+                <div class="modal-quote" id="modal-quote"></div>
+                <div class="modal-context" id="modal-context"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cute Spanish teasers for locked days
+        const spanishTeasers = [
+            { emoji: "🦥", text: "Paciencia, mi amor... la espera hace el corazón más fuerte" },
+            { emoji: "✨", text: "Todavía no, cariño... las cosas buenas toman tiempo" },
+            { emoji: "🔮", text: "El futuro es un misterio... disfruta el presente" },
+            { emoji: "💫", text: "No tan rápido, mi vida... cada día tiene su magia" },
+            { emoji: "🌙", text: "Shh... este secreto es para otro día" },
+            { emoji: "💕", text: "La anticipación es parte del amor, ¿no?" },
+            { emoji: "🦋", text: "Las mariposas en mi estómago también están esperando..." },
+            { emoji: "🌺", text: "Como las flores, el amor florece a su propio ritmo" },
+            { emoji: "⏳", text: "Tick tock... pronto, mi pedazo de lindo" },
+            { emoji: "🌅", text: "Cada amanecer nos acerca más..." },
+            { emoji: "💖", text: "¿Impaciente? Yo también te extraño" },
+            { emoji: "🎁", text: "Los mejores regalos requieren esperar..." },
+            { emoji: "🌊", text: "Como las olas del mar... todo llega a su tiempo" },
+            { emoji: "🔐", text: "Este tesoro está guardado para ti... pero no hoy" },
+            { emoji: "😘", text: "Un beso virtual mientras esperas..." }
+        ];
+
+        // Show toast notification
+        function showToast(message, emoji) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<span class="toast-emoji">${emoji}</span>${message}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Get random teaser
+        function getRandomTeaser() {
+            return spanishTeasers[Math.floor(Math.random() * spanishTeasers.length)];
+        }
+
+        // Calendar data - 28 days of memories
+        const calendarData = [
+            {
+                day: 1,
+                date: "Feb 1",
+                hint: "The Beginning",
+                emoji: "🛣️",
+                quote: "Come grab my hand again",
+                context: "Your first message to me after we met on the road. You saw me holding out my thumb, and you took my hand in your heart.",
+                image: null
+            },
+            {
+                day: 2,
+                date: "Feb 2",
+                hint: "First Sight",
+                emoji: "👀",
+                quote: "I noticed your smile... and that you were a smoking babe",
+                context: "The day before we met, you saw me at Taco's. You noticed my smile, but didn't tell me the rest until later...",
+                image: null
+            },
+            {
+                day: 3,
+                date: "Feb 3",
+                hint: "The Touch",
+                emoji: "✋",
+                quote: "It was only that innocent touch at Uma",
+                context: "When you squeezed my hand at Uma, everything changed. That one small gesture opened up our entire universe.",
+                image: null
+            },
+            {
+                day: 4,
+                date: "Feb 4",
+                hint: "Under the Stars",
+                emoji: "🌟",
+                quote: "I felt more safe and loved than I ever have",
+                context: "Our first night together on mushrooms, lying under the stars, lightning all around us. Pure magic.",
+                image: "images/00000005-PHOTO-2026-01-27-17-46-02.jpg"
+            },
+            {
+                day: 5,
+                date: "Feb 5",
+                hint: "Sunset Magic",
+                emoji: "🐋",
+                quote: "The sunset with whales on that log might have been the greatest sunset of my life",
+                context: "Monday's sunset, sitting together on that log, whales appearing as if God himself was painting the moment for us.",
+                image: null
+            },
+            {
+                day: 6,
+                date: "Feb 6", 
+                hint: "The Nickname",
+                emoji: "🦥",
+                quote: "You're such a romantic sloth",
+                context: "You gave me the perfect nickname. Slow, steady, and holding on tight to what matters most.",
+                image: null
+            },
+            {
+                day: 7,
+                date: "Feb 7",
+                hint: "Soulmates",
+                emoji: "💫",
+                quote: "I think we might be soulmates",
+                context: "In Kabbalah, they say you have 7 soulmates on earth at the same time. You are one of mine. Maybe the one.",
+                image: "images/00000008-PHOTO-2026-01-27-17-47-04.jpg"
+            },
+            {
+                day: 8,
+                date: "Feb 8",
+                hint: "Home",
+                emoji: "🏠",
+                quote: "You feel like home",
+                context: "We finally found each other. After all the searching, all the waiting. You feel like home to me.",
+                image: null
+            },
+            {
+                day: 9,
+                date: "Feb 9",
+                hint: "The Brothers",
+                emoji: "👨‍👩‍👦‍👦",
+                quote: "I told my brothers I think I met the one",
+                context: "Joel, Dan, and Josh. They were so happy for us. Joel said he knew I'd meet my wife in 2026.",
+                image: "images/-0000104-PHOTO-2026-01-27-10-23-47.jpg"
+            },
+            {
+                day: 10,
+                date: "Feb 10",
+                hint: "The Filter",
+                emoji: "🔮",
+                quote: "In less than a week you became the filter through which I see the world",
+                context: "You changed everything. Every thought, every moment, every dream now passes through you first.",
+                image: null
+            },
+            {
+                day: 11,
+                date: "Feb 11",
+                hint: "Princess Movies",
+                emoji: "👸",
+                quote: "I grew up watching princess movies... And then you came",
+                context: "You made me believe again. That fairytales are real. That magic exists. That I deserve this love.",
+                image: "images/00000010-PHOTO-2026-01-27-17-51-13.jpg"
+            },
+            {
+                day: 12,
+                date: "Feb 12",
+                hint: "Duolingo",
+                emoji: "🇪🇸",
+                quote: "Tomorrow I'm switching to Duolingo Spanish",
+                context: "Learning your language, word by word, so I can whisper te amo properly in your ear.",
+                image: null
+            },
+            {
+                day: 13,
+                date: "Feb 13",
+                hint: "The List",
+                emoji: "📝",
+                quote: "Everyone said 'this person doesn't exist'. Only my mum said 'you will find her'",
+                context: "I wrote a list of everything I wanted in a partner. They laughed. But you check every box.",
+                image: null
+            },
+            {
+                day: 14,
+                date: "Feb 14",
+                hint: "Valentine's Day",
+                emoji: "❤️",
+                quote: "I DOOOOOOOOO",
+                context: "When you asked if I wanted you as my wife. My heart screamed yes before my mind could think.",
+                image: "images/00000013-PHOTO-2026-01-27-17-54-38.jpg"
+            },
+            {
+                day: 15,
+                date: "Feb 15",
+                hint: "Your Art",
+                emoji: "🎨",
+                quote: "Your oracle deck is your soul's deepest purpose",
+                context: "The Tree of Life, your art, your vision. You are creating something magical for the world.",
+                image: null
+            },
+            {
+                day: 16,
+                date: "Feb 16",
+                hint: "The Music",
+                emoji: "🎧",
+                quote: "I'm making the sickest set for you. You're gonna freak.",
+                context: "Rhythm Candy - a mix made with love, with your beautiful face on the cover.",
+                image: null
+            },
+            {
+                day: 17,
+                date: "Feb 17",
+                hint: "Dream Girl",
+                emoji: "✨",
+                quote: "So you know I mean it when I say you're my dream girl",
+                context: "88% sure you're the one, you said. And that percentage keeps going up every single day.",
+                image: "images/00000014-PHOTO-2026-01-27-17-55-02.jpg"
+            },
+            {
+                day: 18,
+                date: "Feb 18",
+                hint: "The Empanadas",
+                emoji: "🥟",
+                quote: "I want to cook Argentinian empanadas for you",
+                context: "Gluten-free, with love. Your hands making food for my heart. I can't wait to taste them.",
+                image: null
+            },
+            {
+                day: 19,
+                date: "Feb 19",
+                hint: "Souls",
+                emoji: "🕯️",
+                quote: "We're souls having a human experience",
+                context: "Points for the universe. It brought us together in the most perfect, impossible way.",
+                image: null
+            },
+            {
+                day: 20,
+                date: "Feb 20",
+                hint: "The Witch",
+                emoji: "🔥",
+                quote: "I organized everything. You were the chosen one.",
+                context: "Dancing naked around the fire on a full moon, casting spells to bring you to me. It worked.",
+                image: null
+            },
+            {
+                day: 21,
+                date: "Feb 21",
+                hint: "The Mural",
+                emoji: "🖌️",
+                quote: "You painted that?! It's incredible.",
+                context: "The ice cream shop in Rafaela, two months of your beautiful art. One day I'll see it.",
+                image: null
+            },
+            {
+                day: 22,
+                date: "Feb 22",
+                hint: "Challah",
+                emoji: "🍞",
+                quote: "Is there any way of making gluten-free challah?",
+                context: "You want to learn my traditions, bake my family's recipes. My mum's challah, made by your hands.",
+                image: null
+            },
+            {
+                day: 23,
+                date: "Feb 23",
+                hint: "The Message",
+                emoji: "💌",
+                quote: "My heart is fully yours",
+                context: "You take care of every part of me. You're healing me in ways you can't even imagine.",
+                image: null
+            },
+            {
+                day: 24,
+                date: "Feb 24",
+                hint: "Peak Fitness",
+                emoji: "🏃",
+                quote: "What's the point of being at peak physical fitness if I'm not gonna use it to chase the love of my life around the world?",
+                context: "Telluride to Santa Teresa. I would travel anywhere for you.",
+                image: "images/00000236-PHOTO-2026-01-28-09-39-06.jpg"
+            },
+            {
+                day: 25,
+                date: "Feb 25",
+                hint: "Gracias",
+                emoji: "🙏",
+                quote: "Gracias por existir",
+                context: "Thank you for existing. Thank you for being you. Thank you for finding me on that road.",
+                image: null
+            },
+            {
+                day: 26,
+                date: "Feb 26",
+                hint: "The Dream",
+                emoji: "🌅",
+                quote: "I imagine myself dancing in front of your DJ booth. That's my dirty dream.",
+                context: "We will make it real. In Santa Teresa, in life, in everything.",
+                image: null
+            },
+            {
+                day: 27,
+                date: "Feb 27",
+                hint: "Last Sleep Alone",
+                emoji: "🛏️",
+                quote: "I want to be cozy and warm inside of the blankets with my face on your chest",
+                context: "One more night apart. Tomorrow you fly to me. Tomorrow everything begins again.",
+                image: "images/-0000133-PHOTO-2026-01-26-22-46-56.jpg"
+            },
+            {
+                day: 28,
+                date: "Feb 28",
+                hint: "Almost There",
+                emoji: "✈️",
+                quote: "You're treating me with such presence, sweetness, consideration, and initiative",
+                context: "The last day of waiting. Pack your bags. I'm coming. Purim in paradise with my princess.",
+                image: null
+            }
+        ];
+
+        // Target date: March 1, 2026
+        const targetDate = new Date('2026-03-01T00:00:00');
+        const startDate = new Date('2026-02-01T00:00:00');
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Update countdown timer
+        function updateCountdown() {
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                document.getElementById('days').textContent = '0';
+                document.getElementById('hours').textContent = '0';
+                document.getElementById('minutes').textContent = '0';
+                document.getElementById('seconds').textContent = '0';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        // Check day status: 'past', 'today', or 'future'
+        function getDayStatus(dayNum) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const dayDate = new Date(startDate);
+            dayDate.setDate(startDate.getDate() + dayNum - 1);
+            const dayDateOnly = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
+            
+            if (dayDateOnly < today) return 'past';
+            if (dayDateOnly.getTime() === today.getTime()) return 'today';
+            return 'future';
+        }
+
+        // Create heart burst effect
+        function createHeartBurst(element) {
+            const hearts = ['✨', '💖', '💕', '⭐', '🦥', '💫'];
+            const burst = document.createElement('div');
+            burst.className = 'heart-burst';
+            
+            for (let i = 0; i < 8; i++) {
+                const heart = document.createElement('span');
+                heart.textContent = hearts[i % hearts.length];
+                const angle = (i / 8) * Math.PI * 2;
+                const distance = 60 + Math.random() * 30;
+                heart.style.setProperty('--tx', (Math.cos(angle) * distance) + 'px');
+                heart.style.setProperty('--ty', (Math.sin(angle) * distance - 20) + 'px');
+                heart.style.animationDelay = (i * 0.06) + 's';
+                burst.appendChild(heart);
+            }
+            
+            element.appendChild(burst);
+            setTimeout(() => burst.remove(), 1200);
+        }
+
+        // Create calendar
+        function createCalendar() {
+            const calendar = document.getElementById('calendar');
+            
+            calendarData.forEach(day => {
+                const status = getDayStatus(day.day);
+                const isPast = status === 'past';
+                const isToday = status === 'today';
+                const isFuture = status === 'future';
+                
+                const card = document.createElement('div');
+                card.className = `day-card ${isFuture ? 'locked' : ''} ${isPast ? 'revealed' : ''}`;
+                card.dataset.day = day.day;
+                
+                // Front of card - what to show
+                let hintText = '🔒';
+                let hintStyle = '';
+                if (isPast) {
+                    hintText = day.hint; // Past days show title
+                    hintStyle = 'color: #f5576c;'; // Pink for revealed titles
+                } else if (isToday) {
+                    hintText = 'Tap to reveal ✨';
+                }
+                
+                const front = document.createElement('div');
+                front.className = 'day-front';
+                front.innerHTML = `
+                    <div class="day-number">${day.day}</div>
+                    <div class="day-date">${day.date}</div>
+                    <div class="day-hint" style="${hintStyle}">${hintText}</div>
+                `;
+                
+                // Back of card
+                const back = document.createElement('div');
+                back.className = 'day-back';
+                
+                if (day.image) {
+                    back.innerHTML = `
+                        <img src="${day.image}" alt="Memory ${day.day}" onerror="this.style.display='none'">
+                        <div class="day-back-overlay">
+                            <div class="day-back-text day-back-quote">"${day.quote}"</div>
+                        </div>
+                    `;
+                } else {
+                    back.innerHTML = `
+                        <div class="day-back-no-image">
+                            <div class="day-back-title">${day.hint}</div>
+                            <div class="emoji">${day.emoji}</div>
+                            <div class="quote">"${day.quote}"</div>
+                        </div>
+                    `;
+                }
+                
+                card.appendChild(front);
+                card.appendChild(back);
+                
+                card.addEventListener('click', () => {
+                    if (isFuture) {
+                        const teaser = getRandomTeaser();
+                        showToast(teaser.text, teaser.emoji);
+                        return;
+                    }
+                    
+                    // For today's card - reveal title if not yet revealed
+                    const isFirstReveal = isToday && !card.classList.contains('revealed');
+                    if (isFirstReveal) {
+                        card.classList.add('revealed');
+                        // Update the hint to show the title
+                        const hintEl = card.querySelector('.day-hint');
+                        if (hintEl) {
+                            hintEl.textContent = day.hint;
+                            hintEl.style.color = '#f5576c';
+                        }
+                    }
+                    
+                    // Always open modal on click (for today and past days)
+                    openModal(day, isFirstReveal);
+                });
+                
+                calendar.appendChild(card);
+            });
+        }
+
+        // Modal functions
+        function openModal(day, showBurst = false) {
+            const modal = document.getElementById('modal');
+            const modalContent = modal.querySelector('.modal-content');
+            const modalImage = document.getElementById('modal-image');
+            const modalEmoji = document.getElementById('modal-emoji');
+            const modalDay = document.getElementById('modal-day');
+            const modalQuote = document.getElementById('modal-quote');
+            const modalContext = document.getElementById('modal-context');
+            
+            if (day.image) {
+                modalImage.src = day.image;
+                modalImage.style.display = 'block';
+                modalEmoji.style.display = 'none';
+            } else {
+                modalImage.style.display = 'none';
+                modalEmoji.style.display = 'block';
+                modalEmoji.textContent = day.emoji;
+            }
+            
+            modalDay.textContent = `Day ${day.day} • ${day.hint}`;
+            modalQuote.textContent = `"${day.quote}"`;
+            modalContext.textContent = day.context;
+            
+            modal.classList.add('active');
+            
+            // Show heart burst on first reveal
+            if (showBurst && modalContent) {
+                setTimeout(() => createHeartBurst(modalContent), 200);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        createStars();
+        createCalendar();
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
