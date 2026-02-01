@@ -1235,33 +1235,42 @@
         updateCountdown();
         setInterval(updateCountdown, 1000);
 
-        // SoundCloud setup - autoplay muted, unmute on card click
+        // SoundCloud setup - works on iOS and desktop
         let scWidget = null;
-        let musicUnmuted = false;
+        let musicStarted = false;
+        let scDuration = 0;
 
-        // Mute on load, seek to random position
+        // Initialize widget on load
         window.addEventListener('load', function() {
             if (typeof SC !== 'undefined') {
                 scWidget = SC.Widget('sc-player');
                 scWidget.bind(SC.Widget.Events.READY, function() {
-                    scWidget.setVolume(0); // Start muted
+                    scWidget.setVolume(0);
                     scWidget.getDuration(function(duration) {
-                        if (duration > 0) {
-                            const randomStart = Math.floor(Math.random() * duration * 0.8);
-                            scWidget.seekTo(randomStart);
-                        }
+                        scDuration = duration;
                     });
+                    // Try muted autoplay (works on desktop, ignored on iOS)
+                    scWidget.play();
                 });
             }
         });
 
-        // Unmute and show player on card click
+        // Start/unmute music on card click
         function startMusic() {
-            if (musicUnmuted || !scWidget) return;
-            musicUnmuted = true;
+            if (musicStarted || !scWidget) return;
+            musicStarted = true;
             
             // Show the player
             document.querySelector('.music-player').classList.add('visible');
+            
+            // On iOS this is the first play, on desktop it's already playing muted
+            scWidget.play();
+            
+            // Seek to random position
+            if (scDuration > 0) {
+                const randomStart = Math.floor(Math.random() * scDuration * 0.8);
+                scWidget.seekTo(randomStart);
+            }
             
             // Fade in volume over 1 second
             let vol = 0;
