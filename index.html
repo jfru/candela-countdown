@@ -1263,6 +1263,21 @@
             // Show the player
             document.querySelector('.music-player').classList.add('visible');
             
+            // Bind to PLAY event to catch when audio actually starts
+            scWidget.bind(SC.Widget.Events.PLAY, function() {
+                // Immediately mute, then fade in
+                scWidget.setVolume(0);
+                
+                setTimeout(() => {
+                    let vol = 0;
+                    const fadeIn = setInterval(() => {
+                        vol += 4;
+                        scWidget.setVolume(vol);
+                        if (vol >= 100) clearInterval(fadeIn);
+                    }, 50);
+                }, 100);
+            });
+            
             // Ensure volume is 0 before playing
             scWidget.setVolume(0);
             
@@ -1274,16 +1289,6 @@
                 const randomStart = Math.floor(Math.random() * scDuration * 0.8);
                 scWidget.seekTo(randomStart);
             }
-            
-            // Wait for audio to actually start, then fade in
-            setTimeout(() => {
-                let vol = 0;
-                const fadeIn = setInterval(() => {
-                    vol += 4;
-                    scWidget.setVolume(vol);
-                    if (vol >= 100) clearInterval(fadeIn);
-                }, 50);
-            }, 2000);
         }
     </script>
 </body>
