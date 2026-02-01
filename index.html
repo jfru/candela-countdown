@@ -204,6 +204,33 @@
             font-style: italic;
         }
 
+        .day-stencil {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.08;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            filter: grayscale(100%);
+        }
+
+        .day-card:not(.locked) .day-stencil {
+            opacity: 0.15;
+            filter: grayscale(0%);
+        }
+
+        .day-card:not(.locked):hover .day-stencil {
+            opacity: 0.25;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .day-card.revealed .day-stencil {
+            opacity: 0.2;
+            filter: grayscale(0%);
+        }
+
         .day-back {
             background: linear-gradient(135deg, #2d1f3d 0%, #1a1a2e 100%);
             border: 2px solid rgba(255, 209, 148, 0.4);
@@ -447,6 +474,10 @@
 
             .day-hint {
                 font-size: 0.65rem;
+            }
+
+            .day-stencil {
+                font-size: 2.8rem;
             }
 
             .timer-box {
@@ -995,6 +1026,7 @@
                 const front = document.createElement('div');
                 front.className = 'day-front';
                 front.innerHTML = `
+                    <div class="day-stencil">${day.emoji}</div>
                     <div class="day-number">${day.day}</div>
                     <div class="day-date">${day.date}</div>
                     <div class="day-hint" style="${hintStyle}">${hintText}</div>
