@@ -184,50 +184,60 @@
         }
 
         .day-number {
+            position: absolute;
+            top: 8px;
+            left: 10px;
             font-family: 'Playfair Display', serif;
-            font-size: 3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #ffd194;
             line-height: 1;
         }
 
         .day-date {
-            font-size: 0.8rem;
+            position: absolute;
+            top: 10px;
+            right: 8px;
+            font-size: 0.65rem;
             color: #b8c5d6;
-            margin-top: 5px;
         }
 
         .day-hint {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 10px;
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
             font-style: italic;
+            text-align: center;
+            padding: 0 6px;
         }
 
         .day-stencil {
             position: absolute;
-            font-size: 4rem;
-            opacity: 0.08;
+            font-size: 4.5rem;
+            opacity: 0.25;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
             transition: opacity 0.3s ease, transform 0.3s ease;
-            filter: grayscale(100%);
+            filter: grayscale(80%) brightness(1.2);
         }
 
         .day-card:not(.locked) .day-stencil {
-            opacity: 0.15;
+            opacity: 0.4;
             filter: grayscale(0%);
         }
 
         .day-card:not(.locked):hover .day-stencil {
-            opacity: 0.25;
-            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 0.5;
+            transform: translate(-50%, -50%) scale(1.15);
         }
 
         .day-card.revealed .day-stencil {
-            opacity: 0.2;
+            opacity: 0.45;
             filter: grayscale(0%);
         }
 
@@ -465,15 +475,20 @@
             }
 
             .day-number {
-                font-size: 2rem;
+                font-size: 1.1rem;
+                top: 6px;
+                left: 8px;
             }
 
             .day-date {
-                font-size: 0.7rem;
+                font-size: 0.55rem;
+                top: 8px;
+                right: 6px;
             }
 
             .day-hint {
-                font-size: 0.65rem;
+                font-size: 0.55rem;
+                bottom: 6px;
             }
 
             .day-stencil {
