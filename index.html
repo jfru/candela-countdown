@@ -718,7 +718,7 @@
         <iframe 
             id="sc-player"
             src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/jfroo/rhymth-candy&color=%23f5576c&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
-            allow="autoplay">
+            allow="autoplay; encrypted-media">
         </iframe>
     </div>
     <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -1257,12 +1257,12 @@
                             shouldFadeIn = false;
                             // Mute immediately
                             scWidget.setVolume(0);
-                            // Fade in
+                            // Fade in to 25% max volume
                             let vol = 0;
                             const fadeIn = setInterval(() => {
-                                vol += 2;
+                                vol += 1;
                                 scWidget.setVolume(vol);
-                                if (vol >= 100) clearInterval(fadeIn);
+                                if (vol >= 25) clearInterval(fadeIn);
                             }, 40);
                         }
                     });
